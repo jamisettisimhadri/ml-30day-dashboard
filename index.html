@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30-Day ML Journey | Coding Progress Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation (Desktop) / Mobile Header Toggle -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="logo-text">
+                    <h1>ML30</h1>
+                    <span>JOURNEY TRACKER</span>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button id="today-shortcut-btn" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10.5a8.5 8.5 0 1 1-9-8.385V3"/><path d="M12 3v9l6 3"/></svg>
+                    Jump to Active Day
+                </button>
+                <div class="settings-dropdown-wrapper">
+                    <button id="settings-toggle-btn" class="btn btn-icon" title="Settings & Data Management">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </button>
+                    <div id="settings-menu" class="dropdown-menu hidden">
+                        <h3>Dashboard Controls</h3>
+                        <div class="setting-item">
+                            <label for="start-date-input">Journey Start Date:</label>
+                            <input type="date" id="start-date-input" class="form-input">
+                        </div>
+                        <hr>
+                        <button id="export-data-btn" class="btn btn-sm btn-outline btn-block">Export Backup (JSON)</button>
+                        <button id="import-data-btn" class="btn btn-sm btn-outline btn-block">Import Backup</button>
+                        <input type="file" id="import-file-input" accept=".json" class="hidden">
+                        <button id="reset-progress-btn" class="btn btn-sm btn-danger btn-block">Reset All Data</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Banner Section -->
+        <section class="stats-banner-container">
+            <div class="stats-card stats-circular">
+                <div class="circular-progress-wrapper">
+                    <svg class="circular-svg" viewBox="0 0 100 100">
+                        <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
+                        <circle id="overall-progress-circle" class="circle-fg" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="263.89"></circle>
+                    </svg>
+                    <div class="circular-content">
+                        <span id="overall-percentage" class="stat-number">0%</span>
+                        <span class="stat-label">Complete</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stat-icon-wrapper purple-glow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="stat-details">
+                    <span id="total-hours" class="stat-value">0h</span>
+                    <span class="stat-title">Hours Spent</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stat-icon-wrapper orange-glow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                </div>
+                <div class="stat-details">
+                    <span id="current-streak" class="stat-value">0</span>
+                    <span class="stat-title">Day Streak</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stat-icon-wrapper green-glow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="stat-details">
+                    <span id="tasks-ratio" class="stat-value">0/120</span>
+                    <span class="stat-title">Sessions Logged</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace Layout -->
+        <main class="dashboard-grid">
+            <!-- Left Column: Days Grid & Milestones -->
+            <div class="dashboard-main">
+                <!-- Schedule Grid -->
+                <section class="card panel-card">
+                    <div class="panel-header">
+                        <h2>Curriculum Progress Grid</h2>
+                        <div class="filter-controls">
+                            <span class="filter-label">Filter:</span>
+                            <button class="filter-btn active" data-filter="all">All Days</button>
+                            <button class="filter-btn" data-filter="completed">Completed</button>
+                            <button class="filter-btn" data-filter="in-progress">In Progress</button>
+                            <button class="filter-btn" data-filter="not-started">Not Started</button>
+                        </div>
+                    </div>
+                    
+                    <div id="days-grid" class="days-grid">
+                        <!-- Javascript generates 30 day cards here dynamically -->
+                    </div>
+                </section>
+
+                <!-- Project Milestones Section -->
+                <section class="card panel-card">
+                    <div class="panel-header">
+                        <h2>Project Milestones & Portfolio</h2>
+                    </div>
+                    <div class="projects-container">
+                        <!-- Project 1: House Price Prediction -->
+                        <div class="project-milestone-card" data-project="regression">
+                            <div class="project-details">
+                                <div class="project-meta">
+                                    <span class="project-tag tag-regression">Regression</span>
+                                    <h3>House Price Prediction</h3>
+                                </div>
+                                <span class="project-completion-text">0% Done</span>
+                            </div>
+                            <p class="project-description">Develop a regression model to estimate residential real estate values based on house characteristics. Covers cleaning, engineering features, modeling, and pipelines.</p>
+                            <div class="project-progress-track">
+                                <div class="project-progress-bar" style="width: 0%"></div>
+                            </div>
+                            <div class="project-days-nodes">
+                                <span class="node-label">Involved Days:</span>
+                                <div class="node-list">
+                                    <span class="day-node" data-day="6">D6</span>
+                                    <span class="day-node" data-day="7">D7</span>
+                                    <span class="day-node" data-day="8">D8</span>
+                                    <span class="day-node" data-day="21">D21</span>
+                                    <span class="day-node" data-day="24">D24</span>
+                                </div>
+                            </div>
+                            <div class="project-links">
+                                <div class="input-group">
+                                    <span class="input-addon">GitHub:</span>
+                                    <input type="url" id="p1-repo-url" class="project-link-input" placeholder="https://github.com/..." />
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-addon">Demo:</span>
+                                    <input type="url" id="p1-demo-url" class="project-link-input" placeholder="https://..." />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Project 2: Spam Classification -->
+                        <div class="project-milestone-card" data-project="classification">
+                            <div class="project-details">
+                                <div class="project-meta">
+                                    <span class="project-tag tag-classification">Classification</span>
+                                    <h3>Spam Email Classifier</h3>
+                                </div>
+                                <span class="project-completion-text">0% Done</span>
+                            </div>
+                            <p class="project-description">Construct a text classifier to label messages as spam or ham using tokenization, Naive Bayes / SVM, and classification evaluations.</p>
+                            <div class="project-progress-track">
+                                <div class="project-progress-bar" style="width: 0%"></div>
+                            </div>
+                            <div class="project-days-nodes">
+                                <span class="node-label">Involved Days:</span>
+                                <div class="node-list">
+                                    <span class="day-node" data-day="9">D9</span>
+                                    <span class="day-node" data-day="10">D10</span>
+                                    <span class="day-node" data-day="14">D14</span>
+                                    <span class="day-node" data-day="22">D22</span>
+                                </div>
+                            </div>
+                            <div class="project-links">
+                                <div class="input-group">
+                                    <span class="input-addon">GitHub:</span>
+                                    <input type="url" id="p2-repo-url" class="project-link-input" placeholder="https://github.com/..." />
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-addon">Demo:</span>
+                                    <input type="url" id="p2-demo-url" class="project-link-input" placeholder="https://..." />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Project 3: Customer Segmentation -->
+                        <div class="project-milestone-card" data-project="clustering">
+                            <div class="project-details">
+                                <div class="project-meta">
+                                    <span class="project-tag tag-clustering">Clustering</span>
+                                    <h3>Customer Segmentation</h3>
+                                </div>
+                                <span class="project-completion-text">0% Done</span>
+                            </div>
+                            <p class="project-description">Group active retail buyers into cohorts using unsupervised clustering algorithms and dimensionality reduction techniques.</p>
+                            <div class="project-progress-track">
+                                <div class="project-progress-bar" style="width: 0%"></div>
+                            </div>
+                            <div class="project-days-nodes">
+                                <span class="node-label">Involved Days:</span>
+                                <div class="node-list">
+                                    <span class="day-node" data-day="16">D16</span>
+                                    <span class="day-node" data-day="17">D17</span>
+                                    <span class="day-node" data-day="23">D23</span>
+                                </div>
+                            </div>
+                            <div class="project-links">
+                                <div class="input-group">
+                                    <span class="input-addon">GitHub:</span>
+                                    <input type="url" id="p3-repo-url" class="project-link-input" placeholder="https://github.com/..." />
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-addon">Demo:</span>
+                                    <input type="url" id="p3-demo-url" class="project-link-input" placeholder="https://..." />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Resources Explorer -->
+                <section class="card panel-card">
+                    <div class="panel-header">
+                        <h2>Free Resources & Progress</h2>
+                    </div>
+                    <div class="resources-grid">
+                        <div class="resource-card">
+                            <div class="resource-main">
+                                <input type="checkbox" id="res-kaggle" class="resource-checkbox">
+                                <div class="resource-info">
+                                    <h4>Kaggle Learn Tutorials</h4>
+                                    <p>Covers Python, Pandas, Machine Learning basics, and pipeline architectures.</p>
+                                    <a href="https://www.kaggle.com/learn" target="_blank" class="resource-link">Visit Resource &rarr;</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-main">
+                                <input type="checkbox" id="res-google" class="resource-checkbox">
+                                <div class="resource-info">
+                                    <h4>Google ML Crash Course</h4>
+                                    <p>Google's fast-paced, practical introduction to fundamental machine learning concepts.</p>
+                                    <a href="https://developers.google.com/machine-learning/crash-course" target="_blank" class="resource-link">Visit Resource &rarr;</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-main">
+                                <input type="checkbox" id="res-sklearn" class="resource-checkbox">
+                                <div class="resource-info">
+                                    <h4>scikit-learn Documentation</h4>
+                                    <p>Official docs, API references, code examples, and theoretical tutorials.</p>
+                                    <a href="https://scikit-learn.org/stable/" target="_blank" class="resource-link">Visit Resource &rarr;</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-main">
+                                <input type="checkbox" id="res-statquest" class="resource-checkbox">
+                                <div class="resource-info">
+                                    <h4>StatQuest with Josh Starmer</h4>
+                                    <p>In-depth, highly visual YouTube guides breaking down complex statistics & ML topics.</p>
+                                    <a href="https://www.youtube.com/@statquest" target="_blank" class="resource-link">Visit Resource &rarr;</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Interactive Sidebar (Timer, Checklists, Notes) -->
+            <div class="dashboard-sidebar">
+                <!-- Day Details Card -->
+                <div class="card detail-card sticky-sidebar" id="detail-card">
+                    <div class="detail-header">
+                        <div class="detail-day-badge" id="detail-day-badge">Day 1</div>
+                        <h2 id="detail-title" class="detail-title">ML Overview & Supervised vs Unsupervised</h2>
+                        <p id="detail-calendar-date" class="calendar-date-label"></p>
+                    </div>
+
+                    <!-- Checklist -->
+                    <div class="detail-section">
+                        <h3>Daily Schedule Checklist</h3>
+                        <div class="checklist">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="task-learning" data-task="learning">
+                                <span class="custom-checkbox"></span>
+                                <div class="task-details-label">
+                                    <span class="task-duration">1 HOUR</span>
+                                    <span class="task-heading">Concepts Learning</span>
+                                    <p id="task-learning-desc" class="task-desc">ML overview, supervised vs unsupervised learning</p>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="task-coding" data-task="coding">
+                                <span class="custom-checkbox"></span>
+                                <div class="task-details-label">
+                                    <span class="task-duration">1 HOUR</span>
+                                    <span class="task-heading">Coding Practice</span>
+                                    <p id="task-coding-desc" class="task-desc">Set up Jupyter, scikit-learn, Kaggle notebook</p>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="task-revision" data-task="revision">
+                                <span class="custom-checkbox"></span>
+                                <div class="task-details-label">
+                                    <span class="task-duration">30 MINS</span>
+                                    <span class="task-heading">Revision & Notes</span>
+                                    <p id="task-revision-desc" class="task-desc">Write notes on ML types</p>
+                                </div>
+                            </label>
+
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="task-project" data-task="project">
+                                <span class="custom-checkbox"></span>
+                                <div class="task-details-label">
+                                    <span class="task-duration">30 MINS</span>
+                                    <span class="task-heading">Project Development</span>
+                                    <p id="task-project-desc" class="task-desc">Create a GitHub repo for ML journey</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Timer Section -->
+                    <div class="detail-section timer-section">
+                        <div class="timer-title-row">
+                            <h3>Focus Session Timer</h3>
+                            <div class="timer-presets">
+                                <button class="btn-preset active" data-time="60">60m</button>
+                                <button class="btn-preset" data-time="30">30m</button>
+                                <button class="btn-preset" data-time="5">5m (Test)</button>
+                            </div>
+                        </div>
+
+                        <div class="timer-visual-wrapper">
+                            <div class="timer-ring-container">
+                                <svg class="timer-svg" viewBox="0 0 100 100">
+                                    <circle class="timer-ring-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle id="timer-ring-fg" class="timer-ring-fg" cx="50" cy="50" r="45" stroke-dasharray="282.7" stroke-dashoffset="0"></circle>
+                                </svg>
+                                <div id="timer-display" class="timer-display">60:00</div>
+                            </div>
+                        </div>
+
+                        <div class="timer-controls">
+                            <button id="timer-play-btn" class="btn btn-primary btn-icon-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="timer-btn-play-icon"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <span>Start</span>
+                            </button>
+                            <button id="timer-reset-btn" class="btn btn-secondary btn-icon-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                <span>Reset</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="detail-section notes-section">
+                        <h3>Self Study Notes</h3>
+                        <textarea id="day-notes" placeholder="Write down definitions, code snippets, or key findings for this day..."></textarea>
+                        <span class="notes-autosave-indicator">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            Auto-saved locally
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
